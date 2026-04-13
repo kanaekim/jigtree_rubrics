@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JigTree AI Fluency Rubric</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <style>
+    /* ───────────── CONFIG ───────────── */
+    :root {
+      --midnight:   #080E1A;
+      --deep-navy:  #0C1425;
+      --copper:     #B8863A;
+      --rose-gold:  #C48B6E;
+      --verdigris:  #4A7C6F;
+      --warm-white: #F7F5F0;
+      --cream:      #EDEAE3;
+      --text:       #1A1A1A;
+      --text-mid:   #5A5651;
+      --text-light: #8A857E;
+
+      /* tier accents */
+      --t0: #B5705A;
+      --t1: #B8863A;
+      --t2: #4A7C6F;
+      --t3: #0C1425;
+      --t0-bg: rgba(181,112,90,.08);
+      --t1-bg: rgba(184,134,58,.08);
+      --t2-bg: rgba(74,124,111,.08);
+      --t3-bg: rgba(12,20,37,.06);
+      --t0-header: #4A2A20;
+      --t1-header: #3D2E12;
+      --t2-header: #1E3D35;
+      --t3-header: #080E1A;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--warm-white);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .site-header {
+      background: var(--midnight);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .site-header img {
+      height: 36px;
+      width: auto;
+    }
+
+    /* ── Main container ── */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 48px 40px 64px;
+    }
+    .rubric-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: 32px;
+      font-weight: 400;
+      color: var(--midnight);
+      margin-bottom: 4px;
+      letter-spacing: -0.3px;
+    }
+    .rubric-sub {
+      font-size: 14px;
+      color: var(--text-mid);
+      margin-bottom: 32px;
+    }
+
+    /* ── Legend ── */
+    .legend {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-mid);
+    }
+    .legend-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+    }
+
+    /* ── Tier header row ── */
+    .tier-header {
+      display: grid;
+      grid-template-columns: 200px repeat(4, 1fr);
+      gap: 2px;
+      margin-bottom: 2px;
+    }
+    @media (max-width: 900px) {
+      .tier-header { display: none; }
+    }
+    .tier-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      padding: 12px 10px 6px;
+      text-align: center;
+      border-radius: 8px 8px 0 0;
+      color: rgba(255,255,255,.85);
+    }
+    .tier-label.t0 { background: var(--t0-header); }
+    .tier-label.t1 { background: var(--t1-header); }
+    .tier-label.t2 { background: var(--t2-header); }
+    .tier-label.t3 { background: var(--t3-header); }
+
+    .tier-taglines {
+      display: grid;
+      grid-template-columns: 200px repeat(4, 1fr);
+      gap: 2px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 900px) {
+      .tier-taglines { display: none; }
+    }
+    .tier-tagline {
+      font-size: 11px;
+      color: var(--text-light);
+      font-style: italic;
+      padding: 0 10px 10px;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    /* ── Function rows ── */
+    .fn-row { margin-bottom: 3px; }
+
+    .fn-toggle {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      background: var(--cream);
+      border: none;
+      width: 100%;
+      cursor: pointer;
+      border-radius: 8px;
+      font-family: 'DM Sans', sans-serif;
+      transition: background .15s, box-shadow .15s;
+    }
+    .fn-toggle:hover {
+      background: #E5E1D9;
+      box-shadow: 0 1px 3px rgba(0,0,0,.06);
+    }
+    .fn-toggle .arrow {
+      font-size: 10px;
+      color: var(--text-light);
+      transition: transform .25s ease;
+      flex-shrink: 0;
+    }
+    .fn-toggle.open .arrow {
+      transform: rotate(90deg);
+    }
+    .fn-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--midnight);
+    }
+    .fn-scope {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-left: auto;
+      font-weight: 400;
+    }
+
+    /* ── Grid cells ── */
+    .fn-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height .4s ease;
+    }
+    .fn-grid.open { max-height: 3000px; }
+
+    @media (max-width: 900px) {
+      .fn-grid { grid-template-columns: 1fr; }
+      .cell::before {
+        display: block;
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+        margin-bottom: 8px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid rgba(0,0,0,.06);
+      }
+      .cell.t0::before { content: 'Unacceptable'; color: var(--t0); }
+      .cell.t1::before { content: 'Capable';      color: var(--t1); }
+      .cell.t2::before { content: 'Adoptive';     color: var(--t2); }
+      .cell.t3::before { content: 'Transformative'; color: var(--t3); }
+    }
+
+    .cell {
+      padding: 16px 14px;
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text);
+      border-left: 3px solid transparent;
+      background: #fff;
+    }
+    .cell.t0 { border-left-color: var(--t0); background: var(--t0-bg); }
+    .cell.t1 { border-left-color: var(--t1); background: var(--t1-bg); }
+    .cell.t2 { border-left-color: var(--t2); background: var(--t2-bg); }
+    .cell.t3 { border-left-color: var(--t3); background: var(--t3-bg); }
+
+    .cell ul {
+      margin: 0 0 0 16px;
+      padding: 0;
+    }
+    .cell li {
+      margin-bottom: 6px;
+    }
+    .cell li:last-child { margin-bottom: 0; }
+    .cell li::marker { color: var(--text-light); }
+
+    /* ── Footer ── */
+    .footer {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 32px;
+      text-align: right;
+    }
+
+    /* ── Loading / Setup ── */
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--text-mid);
+    }
+    .loading .spinner {
+      display: inline-block;
+      width: 24px; height: 24px;
+      border: 2px solid var(--cream);
+      border-top-color: var(--copper);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .setup-msg {
+      text-align: center;
+      padding: 60px 20px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+    .setup-msg h2 {
+      font-family: 'DM Serif Display', serif;
+      font-weight: 400;
+      font-size: 22px;
+      color: var(--midnight);
+      margin-bottom: 16px;
+    }
+    .setup-msg p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: var(--text-mid);
+      margin-bottom: 12px;
+    }
+    .setup-msg code {
+      background: var(--cream);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    .setup-msg ol {
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.8;
+      color: var(--text-mid);
+      margin: 16px 0 0 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="site-header">
+  <img src="./JigTree_logo.png" alt="JigTree">
+</div>
+
+<div class="container">
+  <div class="rubric-title">AI Fluency Rubric</div>
+  <div class="rubric-sub">Calibrated to a PE-backed multi-product SaaS portfolio operating model</div>
+
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--t0)"></div>Unacceptable</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--t1)"></div>Capable</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--t2)"></div>Adoptive</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--t3)"></div>Transformative</div>
+  </div>
+
+  <div class="tier-header">
+    <div></div>
+    <div class="tier-label t0">Unacceptable</div>
+    <div class="tier-label t1">Capable</div>
+    <div class="tier-label t2">Adoptive</div>
+    <div class="tier-label t3">Transformative</div>
+  </div>
+  <div class="tier-taglines">
+    <div></div>
+    <div class="tier-tagline">"This is the extent of how I use AI at work"</div>
+    <div class="tier-tagline">"I use AI to operate at a meaningfully higher level"</div>
+    <div class="tier-tagline">"I orchestrate AI / build systems that elevate how I work"</div>
+    <div class="tier-tagline">"I re-engineer how work happens"</div>
+  </div>
+
+  <div id="functions">
+    <div class="loading"><div class="spinner"></div><br>Loading rubric data…</div>
+  </div>
+
+  <div class="footer">Updated April 2026</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  CONFIGURATION — paste your published Google Sheet CSV URL here
+// ═══════════════════════════════════════════════════════════════
+//
+//  Steps:
+//  1. Open your Google Sheet with the rubric data
+//  2. File → Share → Publish to web
+//  3. Choose the sheet tab, select "Comma-separated values (.csv)"
+//  4. Click Publish, copy the URL
+//  5. Paste it below between the quotes
+//
+const SHEET_CSV_URL = '';
+// ═══════════════════════════════════════════════════════════════
+
+const container = document.getElementById('functions');
+
+// ── Fallback data (used when no sheet URL is configured) ──
+const FALLBACK_DATA = [
+  {name:"Product",scope:"Existing customer layer",tiers:[
+    {t:"t0",items:["Uses AI to look things up or draft first-pass docs, but the product dev cycle — intake, spec, prioritize, ship, validate — is unchanged","Specs look the same as pre-AI; can't show before/after on cycle time, quality, or output volume","Customer feedback sits in tickets and Slack waiting for a human to synthesize","RCA and incident classification are still manual pattern-matching"]},
+    {t:"t1",items:["Structured approach to AI for specs, RCAs, feedback synthesis, and release docs","Uses AI to tap into data (usage patterns, ticket trends, churn signals) previously too labor-intensive to analyze","Can articulate which AI tools are used, where they break, and how workflows evolved","Generates working prototypes faster; uses AI to pressure-test prioritization","Incident response uses AI for classification and pattern detection; reusable prompt templates for recurring deliverables"]},
+    {t:"t2",items:["Built repeatable AI-powered pipelines: intake-to-spec, ticket-to-RCA, feedback-to-roadmap-signal","AI systems continuously monitor product health (NPS, support volume, usage drops, incident frequency) and surface signals without being asked","New capabilities: automated churn risk scoring, AI-generated customer comms, spec drafts pulling from live data","Cross-portfolio pattern recognition (common issues, shared infra risks) is AI-assisted; single product owner covers more products"]},
+    {t:"t3",items:["The PM → TPM → Eng → QA → Deploy pipeline replaced by workflow where AI agents handle spec generation, implementation plans, and post-deploy monitoring — humans at judgment points only","Roadmaps are living, AI-maintained artifacts updating from real-time signals, not quarterly cycles","Single product owner manages multiple products because agent infrastructure handles execution, monitoring, and routine customer comms","Handoffs between product, engineering, support, and CS collapsed into a single end-to-end workflow"]}
+  ]},
+  {name:"Product marketing",scope:"Existing customer layer",tiers:[
+    {t:"t0",items:["Uses AI for first drafts of emails, blog posts, or campaign copy but output reads like unedited AI","No repeatable workflow; can't explain how AI changed process, speed, or quality","Before and after AI, the marketing function looks largely the same","Campaign ideas come from the same process; AI just types them up faster"]},
+    {t:"t1",items:["Regularly uses AI for content creation, SEO analysis, competitive positioning, and campaign performance review","Output volume and quality measurably up; built reusable prompt library for top formats (release announcements, customer emails, feature briefs)","AI assists with LLM citation optimization, content strategy, and audience segmentation in ways that weren't practical before","Can explain how templates have been refined over time"]},
+    {t:"t2",items:["Runs AI-driven experiments with measurable results (A/B testing copy, CTR improvements) and defaults to this approach","Built a content system — not just a workflow — that drafts, formats, and schedules across channels with minimal manual intervention","AI-generated customer comms (quarterly updates, release announcements, referral campaigns) go out on a designed cadence without manual execution each time","Marketing analytics (channel performance, content ROI) are AI-powered and feed back into strategy; LLM-optimized content is a deliberate, measurable initiative"]},
+    {t:"t3",items:["Product marketing is embedded in the existing-customer workflow, not a standalone function","AI agents generate campaign variants at scale tied to customer retention signals and product usage data","Content pipelines — email sequences, product update announcements, customer education materials — run autonomously with human review at publication checkpoints only","Personalization at the account level, responsive to real-time usage and health signals; entire categories of marketing work run without human involvement"]}
+  ]},
+  {name:"Account management & CS",scope:"Existing customer layer",tiers:[
+    {t:"t0",items:["Uses AI to help write outreach emails or find info in account plans; pulls Read.ai summaries after calls","CS call prep, upsell identification, and churn risk detection are all still manual","Can't point to evidence that outreach is more effective, prep is faster, or pipeline is better","AM/CS workflow is fundamentally the same as pre-AI"]},
+    {t:"t1",items:["Uses AI products daily — account prep workflows, prospecting research","Built a personal process that saves meaningful time: AI-drafted comms, AI-summarized account histories, AI-generated CS call content","Can show specific before/after examples of improved tactical execution","Feeds relevant context into AI (account history, ticket trends, usage data) rather than asking isolated questions"]},
+    {t:"t2",items:["Chained multiple AI tools into repeatable workflows: AI research → account plan → personalized outreach sequence","Proactively shares what's working; has become a go-to resource for others","Uses AI to surface signals not findable manually — expansion triggers from usage data, competitive displacement from tickets, churn risk from engagement patterns","CS call prep that took hours now takes minutes; can describe AI setup, its versions, and what to build next"]},
+    {t:"t3",items:["Redesigned the core AM/CS motion end-to-end with AI-native logic: agentic screening, AI-generated deliverables, quality checks that catch issues before they reach decision-makers","AI agents detect customer problems before the customer reports them — from usage drops, ticket sentiment, or payment pattern changes","CS calls replaced by continuous AI-generated account health intelligence for routine touchpoints; human judgment reserved for at-risk accounts and strategic upsells","Agent-driven workflows have produced measurable team-level impact: pipeline coverage increase, reduction in manual reporting, faster stage progression"]}
+  ]},
+  {name:"Support",scope:"Existing customer layer",tiers:[
+    {t:"t0",items:["Asks AI one-off questions then goes back to the same manual workflow","Treats AI as a drafting shortcut for Google Chat messages or email replies but hasn't applied to substantive work","No before/after on resolution time, ticket quality, or deflection rate","No evidence of impact"]},
+    {t:"t1",items:["Has repeatable prompts for core work — ticket triage, response drafting, escalation summaries, RCA documentation","Feeds relevant context (ticket history, product docs, known issues) into AI before complex work","Uses AI for things previously impossible: more thorough pre-escalation research, second pass on quality, structured summaries","Can describe what's improved and why"]},
+    {t:"t2",items:["Built pipelines of agents that take in feedback, auto-classify tickets, suggest resolutions, and draft responses","AI-powered monitoring of ticket trends, CSAT, and escalation patterns runs continuously","Always-on AI systems: automated KBA creation from resolved tickets, sentiment monitoring, auto-routing by product/severity","Deflection rates and first-response times measurably improved and tied to specific AI systems built"]},
+    {t:"t3",items:["Tier 1 and most of Tier 2 handled by AI agents end-to-end with immediate, contextual resolution","The support 'team' is an agent fleet with human escalation only for novel problems, high-stakes accounts, or judgment calls","Ticket-to-fix cycles flow through a unified workflow: agent detects issue → drafts fix spec → routes through build pipeline → confirms resolution","Tier 1/2/3 staffing model replaced by an escalation confidence threshold in the agent system"]}
+  ]},
+  {name:"Engineering & SaaSOps",scope:"Technical layer",tiers:[
+    {t:"t0",items:["Uses AI as a lightweight code assistant — snippets, debugging, summarization — but design/build/test/ship workflow unchanged","Can't explain tool choices, limitations, or how usage has evolved","Little evidence of intentional experimentation or repeatable workflows"]},
+    {t:"t1",items:["Uses AI regularly across implementation, debugging, testing, and documentation with concrete quality/speed improvements","Shows real tool and model literacy — can explain why different tools for different tasks, where they break","Refined approach over time with demonstrable before/after on specific deliverables"]},
+    {t:"t2",items:["AI fundamentally changes how they engineer — defaults to AI-first approaches where appropriate","Built workflows, tooling, or practices that improve output beyond just themselves","Strong judgment on tradeoffs and failure modes; validates outputs, builds review/testing/mitigation into workflow","Infrastructure changes planned with AI-assisted impact analysis and rollback modeling; CI/CD incorporates AI-driven test generation"]},
+    {t:"t3",items:["Code production, review, testing, and delivery meaningfully restructured around agent fleets managed by a CTO-level owner","CTO governs agent fleets that write, test, deploy, and monitor code — humans intervene at security, architecture, and uncertainty judgment points","Shared systems and standards raise the bar across portfolio, enabling teams to move materially faster without lowering quality/reliability","Single CTO-level owner governs engineering across multiple products because agents handle execution"]}
+  ]},
+  {name:"Back office",scope:"Finance, legal, compliance, HR",tiers:[
+    {t:"t0",items:["Manual processes dominate: contract review, compliance filings, audit prep, vendor management","AI might help draft an email or summarize a document, but no workflow redesigned","Back office runs the same way it did pre-AI"]},
+    {t:"t1",items:["AI used regularly for contract clause review, compliance gap analysis, financial report drafting, vendor comparison, audit prep","Can point to time savings and quality improvements on specific deliverables","Built prompts/templates for recurring tasks (NIS2 analysis, SOC 2 evidence collection, RFP responses)","AI assists with pattern recognition across compliance requirements and cost optimization opportunities"]},
+    {t:"t2",items:["Automated recurring workflows: contract review pipelines flagging risk provisions, compliance monitoring tracking obligations/deadlines, AI-assisted financial close","AI surfaces cost optimization opportunities (license consolidation, vendor renegotiation triggers, infra rightsizing) proactively","Audit prep is continuous rather than quarterly fire drills","Can describe AI systems, their current state, and what to build next"]},
+    {t:"t3",items:["Traditional back-office departments collapsed into a single COO with an agentic operating system","AI agents handle reporting, contract lifecycle, compliance filings, vendor management, procurement","Monthly close takes an afternoon of COO review, not a team-week; contract review runs against playbook automatically","Outside counsel reserved for court/mediation/strategy only; compliance is continuous automated workflow with human oversight at audit level"]}
+  ]},
+  {name:"CEO / Visionary",scope:"Strategy & governance",tiers:[
+    {t:"t0",items:["Receives AI summaries and uses AI for research, but operating rhythm still built around coordinating department heads through meetings and reporting layers","Information reaches CEO filtered through management layers; always reacting to things that already happened","Exec team spends most of its time coordinating with each other across functional boundaries"]},
+    {t:"t1",items:["AI embedded in decision-making: real-time dashboards, AI-synthesized portfolio health views, scenario modeling","Reduced reporting chain — fewer intermediary summaries, more direct signal","Uses AI to prepare for board meetings, investor updates, and strategic planning faster with better data","Can articulate how information diet has changed"]},
+    {t:"t2",items:["Built orchestration layer that synthesizes data from every workflow and surfaces decisions requiring human input","Operating rhythm shifted from meeting-heavy coordination to signal-driven decision-making","Governs four functional owners rather than 8–12 department heads; coordination overhead structurally reduced","Makes decisions on unfiltered, real-time data; actively shrinking human-in-the-loop decision points as system improves"]},
+    {t:"t3",items:["Visionary, not coordinator — sets direction, makes big bets, governs the system, owns key relationships, handles escalated judgment calls","Morning dashboard synthesizes overnight metrics across every workflow; critical decisions made in minutes, not days","Can replicate the four-layer structure across multiple products/companies without adding headcount at top","Business improves autonomously: self-healing when things break, self-improving when things can get better; continuous Kaizen engine running 24/7"]}
+  ]}
+];
+
+function parseSheetRow(row) {
+  const name = (row['Function'] || row['function'] || '').trim();
+  const scope = (row['Scope'] || row['scope'] || '').trim();
+  const tierKeys = ['Unacceptable', 'Capable', 'Adoptive', 'Transformative'];
+  const tierClasses = ['t0', 't1', 't2', 't3'];
+
+  if (!name) return null;
+
+  const tiers = tierKeys.map((key, i) => {
+    const raw = row[key] || row[key.toLowerCase()] || '';
+    const items = raw.split(/\n|\|/).map(s => s.trim()).filter(Boolean);
+    return { t: tierClasses[i], items };
+  });
+
+  return { name, scope, tiers };
+}
+
+function renderRubric(data) {
+  container.innerHTML = '';
+
+  data.forEach((fn, i) => {
+    const row = document.createElement('div');
+    row.className = 'fn-row';
+
+    const toggle = document.createElement('button');
+    toggle.className = 'fn-toggle';
+    toggle.innerHTML = `<span class="arrow">&#9654;</span><span class="fn-name">${fn.name}</span><span class="fn-scope">${fn.scope}</span>`;
+
+    const grid = document.createElement('div');
+    grid.className = 'fn-grid';
+
+    fn.tiers.forEach(tier => {
+      const cell = document.createElement('div');
+      cell.className = `cell ${tier.t}`;
+      if (tier.items.length > 0) {
+        cell.innerHTML = `<ul>${tier.items.map(item => `<li>${item}</li>`).join('')}</ul>`;
+      } else {
+        cell.innerHTML = '<p style="color:var(--text-light);font-style:italic;font-size:12px">No criteria defined</p>';
+      }
+      grid.appendChild(cell);
+    });
+
+    toggle.addEventListener('click', () => {
+      grid.classList.toggle('open');
+      toggle.classList.toggle('open');
+    });
+
+    row.appendChild(toggle);
+    row.appendChild(grid);
+    container.appendChild(row);
+  });
+
+  // Auto-open first row
+  const firstToggle = container.querySelector('.fn-toggle');
+  const firstGrid = container.querySelector('.fn-grid');
+  if (firstToggle && firstGrid) {
+    firstToggle.classList.add('open');
+    firstGrid.classList.add('open');
+  }
+}
+
+function showSetup() {
+  container.innerHTML = `
+    <div class="setup-msg">
+      <h2>Almost there — connect your Google Sheet</h2>
+      <p>This page is ready to go. To connect it to your spreadsheet:</p>
+      <ol>
+        <li>Open <code>index.html</code> in a text editor</li>
+        <li>Find the line <code>const SHEET_CSV_URL = '';</code> near the top of the script</li>
+        <li>Paste your published Google Sheet CSV URL between the quotes</li>
+        <li>Redeploy to Vercel</li>
+      </ol>
+      <p style="margin-top:24px">Meanwhile, here's the rubric with the default data:</p>
+    </div>
+  `;
+  renderRubric(FALLBACK_DATA);
+}
+
+// ── Init ──
+if (!SHEET_CSV_URL) {
+  showSetup();
+} else {
+  Papa.parse(SHEET_CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      const data = results.data.map(parseSheetRow).filter(Boolean);
+      if (data.length === 0) {
+        showSetup();
+      } else {
+        renderRubric(data);
+      }
+    },
+    error: function() {
+      showSetup();
+    }
+  });
+}
+</script>
+
+</body>
+</html>
