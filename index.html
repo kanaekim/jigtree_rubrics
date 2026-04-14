@@ -124,14 +124,13 @@
 
     /* ── Function rows ── */
     .fn-row { margin-bottom: 3px; }
- 
-    .fn-toggle {
+
+    .fn-header {
       display: flex;
       align-items: center;
       gap: 10px;
       padding: 14px 16px;
       background: var(--cream);
-      border: none;
       width: 100%;
       border-radius: 8px;
       font-family: 'DM Sans', sans-serif;
@@ -147,11 +146,7 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 2px;
-      overflow: hidden;
-      max-height: 0;
-      transition: max-height .4s ease;
     }
-    .fn-grid.open { max-height: 3000px; }
 
     @media (max-width: 900px) {
       .fn-grid { grid-template-columns: 1fr; }
@@ -370,9 +365,9 @@ function renderRubric(data) {
     const row = document.createElement('div');
     row.className = 'fn-row';
 
-    const toggle = document.createElement('button');
-    toggle.className = 'fn-toggle';
-    toggle.innerHTML = `<span class="arrow">&#9654;</span><span class="fn-name">${fn.name}</span>`;
+    const header = document.createElement('div');
+    header.className = 'fn-header';
+    header.innerHTML = `<span class="fn-name">${fn.name}</span>`;
 
     const grid = document.createElement('div');
     grid.className = 'fn-grid';
@@ -388,23 +383,10 @@ function renderRubric(data) {
       grid.appendChild(cell);
     });
 
-    toggle.addEventListener('click', () => {
-      grid.classList.toggle('open');
-      toggle.classList.toggle('open');
-    });
-
-    row.appendChild(toggle);
+    row.appendChild(header);
     row.appendChild(grid);
     container.appendChild(row);
   });
-
-  // Auto-open first row
-  const firstToggle = container.querySelector('.fn-toggle');
-  const firstGrid = container.querySelector('.fn-grid');
-  if (firstToggle && firstGrid) {
-    firstToggle.classList.add('open');
-    firstGrid.classList.add('open');
-  }
 }
 
 function showSetup() {
@@ -423,7 +405,7 @@ function showSetup() {
   `;
   renderRubric(FALLBACK_DATA);
 }
- 
+
 // ── Init ──
 if (!SHEET_CSV_URL) {
   showSetup();
@@ -446,7 +428,6 @@ if (!SHEET_CSV_URL) {
   });
 }
 </script>
- 
+
 </body>
 </html>
- 
