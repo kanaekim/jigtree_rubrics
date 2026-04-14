@@ -79,27 +79,6 @@
       margin-bottom: 32px;
     }
 
-    /* ── Legend ── */
-    .legend {
-      display: flex;
-      gap: 24px;
-      margin-bottom: 28px;
-      flex-wrap: wrap;
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-mid);
-    }
-    .legend-dot {
-      width: 12px;
-      height: 12px;
-      border-radius: 3px;
-    }
-
     /* ── Tier header row ── */
     .tier-header {
       display: grid;
@@ -145,7 +124,7 @@
 
     /* ── Function rows ── */
     .fn-row { margin-bottom: 3px; }
-
+ 
     .fn-toggle {
       display: flex;
       align-items: center;
@@ -154,34 +133,13 @@
       background: var(--cream);
       border: none;
       width: 100%;
-      cursor: pointer;
       border-radius: 8px;
       font-family: 'DM Sans', sans-serif;
-      transition: background .15s, box-shadow .15s;
-    }
-    .fn-toggle:hover {
-      background: #EBEBEB;
-      box-shadow: 0 1px 3px rgba(0,0,0,.06);
-    }
-    .fn-toggle .arrow {
-      font-size: 10px;
-      color: var(--text-light);
-      transition: transform .25s ease;
-      flex-shrink: 0;
-    }
-    .fn-toggle.open .arrow {
-      transform: rotate(90deg);
     }
     .fn-name {
       font-size: 15px;
       font-weight: 600;
       color: var(--midnight);
-    }
-    .fn-scope {
-      font-size: 12px;
-      color: var(--text-light);
-      margin-left: auto;
-      font-weight: 400;
     }
 
     /* ── Grid cells ── */
@@ -302,15 +260,8 @@
 </div>
 
 <div class="container">
-  <div class="rubric-title">AI Fluency Rubric</div>
+  <div class="rubric-title">JigTree AI Fluency Rubric</div>
   <div class="rubric-sub">Calibrated to a PE-backed multi-product SaaS portfolio operating model</div>
-
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:var(--t0)"></div>Unacceptable</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--t1)"></div>Capable</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--t2)"></div>Adoptive</div>
-    <div class="legend-item"><div class="legend-dot" style="background:var(--t3)"></div>Transformative</div>
-  </div>
 
   <div class="tier-header">
     <div class="tier-label t0">Unacceptable</div>
@@ -472,7 +423,7 @@ function showSetup() {
   `;
   renderRubric(FALLBACK_DATA);
 }
-
+ 
 // ── Init ──
 if (!SHEET_CSV_URL) {
   showSetup();
@@ -495,6 +446,7 @@ if (!SHEET_CSV_URL) {
   });
 }
 </script>
-
+ 
 </body>
 </html>
+ 
