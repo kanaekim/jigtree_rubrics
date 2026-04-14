@@ -16,8 +16,8 @@
       --copper:     #B8863A;
       --rose-gold:  #C48B6E;
       --verdigris:  #4A7C6F;
-      --warm-white: #F7F5F0;
-      --cream:      #EDEAE3;
+      --warm-white: #FFFFFF;
+      --cream:      #F5F5F5;
       --text:       #1A1A1A;
       --text-mid:   #5A5651;
       --text-light: #8A857E;
@@ -48,8 +48,8 @@
 
     /* ── Header ── */
     .site-header {
-      background: var(--warm-white);
-      padding: 20px 40px;
+      background: var(--midnight);
+      padding: 24px 40px;
       display: flex;
       align-items: center;
       gap: 16px;
@@ -63,7 +63,7 @@
     .container {
       max-width: 1280px;
       margin: 0 auto;
-      padding: 28px 40px 64px;
+      padding: 20px 40px 64px;
     }
     .rubric-title {
       font-family: 'DM Serif Display', serif;
@@ -103,7 +103,7 @@
     /* ── Tier header row ── */
     .tier-header {
       display: grid;
-      grid-template-columns: 200px repeat(4, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 2px;
       margin-bottom: 2px;
     }
@@ -127,7 +127,7 @@
 
     .tier-taglines {
       display: grid;
-      grid-template-columns: 200px repeat(4, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 2px;
       margin-bottom: 16px;
     }
@@ -160,7 +160,7 @@
       transition: background .15s, box-shadow .15s;
     }
     .fn-toggle:hover {
-      background: #E5E1D9;
+      background: #EBEBEB;
       box-shadow: 0 1px 3px rgba(0,0,0,.06);
     }
     .fn-toggle .arrow {
@@ -298,7 +298,7 @@
 <body>
 
 <div class="site-header">
-  <img src="./JigTree logo.png" alt="JigTree">
+  <img src="./JigTree_logo.png" alt="JigTree">
 </div>
 
 <div class="container">
@@ -313,14 +313,12 @@
   </div>
 
   <div class="tier-header">
-    <div></div>
     <div class="tier-label t0">Unacceptable</div>
     <div class="tier-label t1">Capable</div>
     <div class="tier-label t2">Adoptive</div>
     <div class="tier-label t3">Transformative</div>
   </div>
   <div class="tier-taglines">
-    <div></div>
     <div class="tier-tagline">"This is the extent of how I use AI at work"</div>
     <div class="tier-tagline">"I use AI to operate at a meaningfully higher level"</div>
     <div class="tier-tagline">"I orchestrate AI / build systems that elevate how I work"</div>
@@ -346,7 +344,7 @@
 //  4. Click Publish, copy the URL
 //  5. Paste it below between the quotes
 //
-const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQXYcIdXJtD06i-x1X-0L1p56uLHzbwhqpO5vzlpTr8K01wXJTXIflMSt7hLtwmrQ/pub?gid=1736615572&single=true&output=csv';
+const SHEET_CSV_URL = '';
 // ═══════════════════════════════════════════════════════════════
 
 const container = document.getElementById('functions');
@@ -359,13 +357,13 @@ const FALLBACK_DATA = [
     {t:"t2",items:["Built repeatable AI-powered pipelines: intake-to-spec, ticket-to-RCA, feedback-to-roadmap-signal","AI systems continuously monitor product health (NPS, support volume, usage drops, incident frequency) and surface signals without being asked","New capabilities: automated churn risk scoring, AI-generated customer comms, spec drafts pulling from live data","Cross-portfolio pattern recognition (common issues, shared infra risks) is AI-assisted; single product owner covers more products"]},
     {t:"t3",items:["The PM → TPM → Eng → QA → Deploy pipeline replaced by workflow where AI agents handle spec generation, implementation plans, and post-deploy monitoring — humans at judgment points only","Roadmaps are living, AI-maintained artifacts updating from real-time signals, not quarterly cycles","Single product owner manages multiple products because agent infrastructure handles execution, monitoring, and routine customer comms","Handoffs between product, engineering, support, and CS collapsed into a single end-to-end workflow"]}
   ]},
-  {name:"Product marketing",scope:"Existing customer layer",tiers:[
+  {name:"Product Marketing",scope:"Existing customer layer",tiers:[
     {t:"t0",items:["Uses AI for first drafts of emails, blog posts, or campaign copy but output reads like unedited AI","No repeatable workflow; can't explain how AI changed process, speed, or quality","Before and after AI, the marketing function looks largely the same","Campaign ideas come from the same process; AI just types them up faster"]},
     {t:"t1",items:["Regularly uses AI for content creation, SEO analysis, competitive positioning, and campaign performance review","Output volume and quality measurably up; built reusable prompt library for top formats (release announcements, customer emails, feature briefs)","AI assists with LLM citation optimization, content strategy, and audience segmentation in ways that weren't practical before","Can explain how templates have been refined over time"]},
     {t:"t2",items:["Runs AI-driven experiments with measurable results (A/B testing copy, CTR improvements) and defaults to this approach","Built a content system — not just a workflow — that drafts, formats, and schedules across channels with minimal manual intervention","AI-generated customer comms (quarterly updates, release announcements, referral campaigns) go out on a designed cadence without manual execution each time","Marketing analytics (channel performance, content ROI) are AI-powered and feed back into strategy; LLM-optimized content is a deliberate, measurable initiative"]},
     {t:"t3",items:["Product marketing is embedded in the existing-customer workflow, not a standalone function","AI agents generate campaign variants at scale tied to customer retention signals and product usage data","Content pipelines — email sequences, product update announcements, customer education materials — run autonomously with human review at publication checkpoints only","Personalization at the account level, responsive to real-time usage and health signals; entire categories of marketing work run without human involvement"]}
   ]},
-  {name:"Account management & CS",scope:"Existing customer layer",tiers:[
+  {name:"Account Management & CS",scope:"Existing customer layer",tiers:[
     {t:"t0",items:["Uses AI to help write outreach emails or find info in account plans; pulls Read.ai summaries after calls","CS call prep, upsell identification, and churn risk detection are all still manual","Can't point to evidence that outreach is more effective, prep is faster, or pipeline is better","AM/CS workflow is fundamentally the same as pre-AI"]},
     {t:"t1",items:["Uses AI products daily — account prep workflows, prospecting research","Built a personal process that saves meaningful time: AI-drafted comms, AI-summarized account histories, AI-generated CS call content","Can show specific before/after examples of improved tactical execution","Feeds relevant context into AI (account history, ticket trends, usage data) rather than asking isolated questions"]},
     {t:"t2",items:["Chained multiple AI tools into repeatable workflows: AI research → account plan → personalized outreach sequence","Proactively shares what's working; has become a go-to resource for others","Uses AI to surface signals not findable manually — expansion triggers from usage data, competitive displacement from tickets, churn risk from engagement patterns","CS call prep that took hours now takes minutes; can describe AI setup, its versions, and what to build next"]},
@@ -383,7 +381,7 @@ const FALLBACK_DATA = [
     {t:"t2",items:["AI fundamentally changes how they engineer — defaults to AI-first approaches where appropriate","Built workflows, tooling, or practices that improve output beyond just themselves","Strong judgment on tradeoffs and failure modes; validates outputs, builds review/testing/mitigation into workflow","Infrastructure changes planned with AI-assisted impact analysis and rollback modeling; CI/CD incorporates AI-driven test generation"]},
     {t:"t3",items:["Code production, review, testing, and delivery meaningfully restructured around agent fleets managed by a CTO-level owner","CTO governs agent fleets that write, test, deploy, and monitor code — humans intervene at security, architecture, and uncertainty judgment points","Shared systems and standards raise the bar across portfolio, enabling teams to move materially faster without lowering quality/reliability","Single CTO-level owner governs engineering across multiple products because agents handle execution"]}
   ]},
-  {name:"Back office",scope:"Finance, legal, compliance, HR",tiers:[
+  {name:"Back Office",scope:"Finance, legal, compliance, HR",tiers:[
     {t:"t0",items:["Manual processes dominate: contract review, compliance filings, audit prep, vendor management","AI might help draft an email or summarize a document, but no workflow redesigned","Back office runs the same way it did pre-AI"]},
     {t:"t1",items:["AI used regularly for contract clause review, compliance gap analysis, financial report drafting, vendor comparison, audit prep","Can point to time savings and quality improvements on specific deliverables","Built prompts/templates for recurring tasks (NIS2 analysis, SOC 2 evidence collection, RFP responses)","AI assists with pattern recognition across compliance requirements and cost optimization opportunities"]},
     {t:"t2",items:["Automated recurring workflows: contract review pipelines flagging risk provisions, compliance monitoring tracking obligations/deadlines, AI-assisted financial close","AI surfaces cost optimization opportunities (license consolidation, vendor renegotiation triggers, infra rightsizing) proactively","Audit prep is continuous rather than quarterly fire drills","Can describe AI systems, their current state, and what to build next"]},
@@ -423,7 +421,7 @@ function renderRubric(data) {
 
     const toggle = document.createElement('button');
     toggle.className = 'fn-toggle';
-    toggle.innerHTML = `<span class="arrow">&#9654;</span><span class="fn-name">${fn.name}</span><span class="fn-scope">${fn.scope}</span>`;
+    toggle.innerHTML = `<span class="arrow">&#9654;</span><span class="fn-name">${fn.name}</span>`;
 
     const grid = document.createElement('div');
     grid.className = 'fn-grid';
